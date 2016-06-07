@@ -1,0 +1,27 @@
+# centos-base 环境
+
+# 基于Centos6.7镜像
+FROM centos:centos6.7
+
+# RUN 命令集合 减少层数
+RUN yum install wget sed -y \
+&& mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.backup \
+&& wget http://mirrors.aliyun.com/repo/Centos-6.repo -P /etc/yum.repos.d/ \
+&& yum clean all \
+&& yum makecache \
+&& yum update -y \
+&& yum install lrzsz openssh-server openssh-clients passwd system-config-services tar -y \
+&& cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
+&& echo '* - nofile 65535' >> /etc/security/limits.conf \
+&& sed -i 's/^UsePAM yes/UsePAM no/' /etc/ssh/sshd_config \
+&& ssh-keygen -t dsa -f /etc/ssh/ssh_host_dsa_key \
+&& ssh-keygen -t rsa -f /etc/ssh/ssh_host_rsa_key \
+&& echo -e '#!/bin/bash \n/usr/sbin/sshd -D' > /root/run.sh \
+&& chmod u+x /root/run.sh \
+&& echo "123456@php" | passwd --stdin "root"
+
+# 开放ssh端口
+EXPOSE 22
+
+# 设置容器初始化启动
+CMD ["/root/run.sh"]

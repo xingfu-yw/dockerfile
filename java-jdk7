@@ -1,0 +1,22 @@
+# java-jdk7 环境
+
+# 基于 Centos:base 环境
+FROM centos:base
+
+# RUN 命令集合 减少层数
+RUN mkdir /usr/local/jdk7 \
+&& wget http://centos.cms.xfbm100.com/download/jdk-7u80-linux-x64.tar.gz -P /usr/local/jdk7/ \
+&& tar -zxvf /usr/local/jdk7/jdk-7u80-linux-x64.tar.gz -C /usr/local/jdk7/ \
+&& mv /usr/local/jdk7/jdk1.7.0_80/* /usr/local/jdk7/ \
+&& rm -fr /usr/local/jdk7/jdk1.7.0_80 /usr/local/jdk7/jdk-7u80-linux-x64.tar.gz \
+&& wget http://centos.cms.xfbm100.com/download/bcprov-ext-jdk15on-146.jar -P /usr/local/jdk7/lib/ \
+&& cp /usr/local/jdk7/lib/bcprov-ext-jdk15on-146.jar /usr/local/jdk7/jre/lib/ext \
+&& sed -i '/security.provider.9=sun.security.smartcardio.SunPCSC/a\security.provider.10=org.bouncycastle.jce.provider.BouncyCastleProvider' \
+/usr/local/jdk7/jre/lib/security/java.security \
+&& echo 'export JAVA_HOME=/usr/local/jdk7' > /etc/profile.d/path.sh \
+&& echo 'export CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar' >> /etc/profile.d/path.sh \
+&& echo 'export PATH=$JAVA_HOME/bin:$PATH' >> /etc/profile.d/path.sh \
+&& sed -i '1a\source /etc/profile' /root/run.sh
+
+# 设置容器初始化启动
+CMD ["/root/run.sh"]

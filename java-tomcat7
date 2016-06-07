@@ -1,0 +1,28 @@
+# java-tomcat7 环境
+
+# 基于 java:jdk7 环境
+FROM java:jdk7
+
+# RUN 命令集合 减少层数
+RUN mkdir /usr/local/tomcat7 \
+&& wget http://centos.cms.xfbm100.com/download/apache-tomcat-7.0.68.tar.gz -P /usr/local/tomcat7/ \
+&& tar -zxvf /usr/local/tomcat7/apache-tomcat-7.0.68.tar.gz -C /usr/local/tomcat7/ \
+&& mv /usr/local/tomcat7/apache-tomcat-7.0.68/* /usr/local/tomcat7/ \
+&& rm -rf /usr/local/tomcat7/webapps/* \
+&& rm -fr /usr/local/tomcat7/apache-tomcat-7.0.68 /usr/local/tomcat7/apache-tomcat-7.0.68.tar.gz \
+&& wget http://centos.cms.xfbm100.com/download/service_tomcat -P /etc/init.d/ \
+&& mv /etc/init.d/service_tomcat /etc/init.d/tomcat \
+&& sed -i '/<Connector port="8080" protocol="HTTP\/1.1"/{n;s/connectionTimeout="20000"/connectionTimeout="20000"  minSpareThreads="20"  maxThreads="2000"/g}' \
+/usr/local/tomcat7/conf/server.xml \
+&& chmod +x /etc/init.d/tomcat \
+&& sed -i '2a\service tomcat start' /root/run.sh \
+&& useradd tomcat \
+&& chown -R tomcat:tomcat /usr/local/jdk7 \
+&& chown -R tomcat:tomcat /usr/local/tomcat7 \
+&& echo "123456@xf" | passwd --stdin "tomcat"
+
+# 开启tomcat 8080端口
+EXPOSE 8080
+
+# 设置容器初始化启动
+CMD ["/root/run.sh"]
