@@ -22,5 +22,4 @@ ENV LANG en_US.UTF-8
 VOLUME ["/sys/fs/cgroup"]
 
 # 容器自动初始化
-
 CMD ["/usr/sbin/init"]
