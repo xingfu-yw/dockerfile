@@ -7,10 +7,9 @@ FROM centos:centos6.7
 RUN yum install wget sed -y \
 && mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.backup \
 && wget http://mirrors.aliyun.com/repo/Centos-6.repo -P /etc/yum.repos.d/ \
-&& yum clean all \
-&& yum makecache \
 && yum update -y \
 && yum install lrzsz openssh-server openssh-clients passwd system-config-services tar -y \
+&& yum clean all \
 && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
 && echo '* - nofile 65535' >> /etc/security/limits.conf \
 && sed -i 's/^UsePAM yes/UsePAM no/' /etc/ssh/sshd_config \
